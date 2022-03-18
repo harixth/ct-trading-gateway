@@ -1,8 +1,9 @@
-import { DynamicModule, Module } from '@nestjs/common';
+import { DynamicModule, Global, Module } from '@nestjs/common';
 import { ALPACA_CONFIG_OPTIONS } from './alpaca.constant';
 import { createAlpacaProvider } from './alpaca.provider';
 import { AlpacaModuleOptions } from './interface/alpaca-options.interface';
 
+@Global()
 @Module({
   exports: [ALPACA_CONFIG_OPTIONS],
 })
