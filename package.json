@@ -1,6 +1,6 @@
 {
-  "name": "trading-gateway",
-  "version": "0.0.1",
+  "name": "ct-trading-gateway",
+  "version": "1.0.0",
   "description": "",
   "author": "",
   "private": true,
@@ -25,9 +25,11 @@
     "@nestjs/common": "^8.0.0",
     "@nestjs/core": "^8.0.0",
     "@nestjs/mapped-types": "*",
+    "@nestjs/microservices": "^8.4.1",
     "@nestjs/platform-express": "^8.0.0",
     "@nestjs/platform-socket.io": "^8.4.1",
     "@nestjs/websockets": "^8.4.1",
+    "kafkajs": "^1.16.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0"

@@ -3,6 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AlpacaModule } from './alpaca/alpaca.module';
 import { PriceModule } from './price/price.module';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 @Module({
   imports: [
     AlpacaModule.register({
@@ -10,6 +11,21 @@ import { PriceModule } from './price/price.module';
       secretKey: '2petluGMCQgbWVnwYvkpfDqNgAG85UlnbHg77XTp',
       paper: true,
     }),
+    ClientsModule.register([
+      {
+        name: 'PRICING_SERVICE',
+        transport: Transport.KAFKA,
+        options: {
+          client: {
+            clientId: 'pricing',
+            brokers: ['localhost:29092'],
+          },
+          consumer: {
+            groupId: 'pricing-consumer',
+          },
+        },
+      },
+    ]),
     PriceModule,
   ],
   controllers: [AppController],

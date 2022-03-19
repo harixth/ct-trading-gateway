@@ -1,11 +1,19 @@
+import { Controller, Inject } from '@nestjs/common';
+import {
+  ClientKafka,
+  Ctx,
+  KafkaContext,
+  MessagePattern,
+  Payload,
+} from '@nestjs/microservices';
 import {
   ConnectedSocket,
-  MessageBody,
-  SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
+import { Consumer } from 'kafkajs';
 import { Server, Socket } from 'socket.io';
+import { CRYPTO_SYMBOLS } from './constants';
 import { PriceService } from './price.service';
 
 @WebSocketGateway(3080, {
@@ -14,28 +22,49 @@ import { PriceService } from './price.service';
     credentials: true,
   },
 })
+@Controller()
 export class PriceGateway {
   @WebSocketServer()
   server: Server;
+  consumer: Consumer;
+  constructor(
+    private readonly priceService: PriceService,
+    @Inject('TRADING_SERVICE') private readonly kafka: ClientKafka,
+  ) {}
 
-  constructor(private readonly priceService: PriceService) {}
+  async onModuleInit() {
+    CRYPTO_SYMBOLS.forEach((symbol: string) => {
+      this.kafka.subscribeToResponseOf(`crypto.prices.${symbol}`);
+    });
+    await this.kafka.connect();
+  }
 
-  handleDisconnect(@ConnectedSocket() socket: Socket) {
-    console.log(`Client disconnected: ${socket.id}`);
+  onModuleDestroy() {
+    this.kafka.close();
     return this.priceService.destroy();
   }
 
-  handleConnection(@ConnectedSocket() socket: Socket, ...args: any[]) {
-    console.log(`Client connected: ${socket.id}`);
+  afterInit() {
+    console.log('Websocket Gateway initialized');
     try {
-      return this.priceService.init();
+      this.kafka.createClient();
+      return this.priceService.init(this.kafka);
     } catch (err) {
       console.log(err);
     }
   }
 
-  @SubscribeMessage('price_panel')
-  handleEvent(@MessageBody() data: unknown, @ConnectedSocket() socket: Socket) {
-    return this.priceService.getQoutes(socket);
+  handleDisconnect(@ConnectedSocket() socket: Socket) {
+    console.log(`Client disconnected: ${socket.id}`);
+  }
+
+  async handleConnection(@ConnectedSocket() socket: Socket, ...args: any[]) {
+    console.log(`Client connected: ${socket.id}`);
+  }
+
+  emit(key: string, value: any) {
+    console.log(key + ': ');
+    console.log(value);
+    this.server.emit(key, value);
   }
 }
