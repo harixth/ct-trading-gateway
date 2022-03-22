@@ -1,12 +1,15 @@
 version: '3.3'
 services:
-  crypto-tracker-gateway:
-    container_name: crypto_tracker_gateway
+  ct-trading-gateway:
+    container_name: ct-trading-gateway
     build:
       context: .
       dockerfile: Dockerfile
     restart: always
     ports:
-      - 4000:4000
+      - 3000:3000
+      - 3080:3080
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     env_file:
       - .env

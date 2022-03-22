@@ -1,2 +1,2 @@
-docker build . -t crypto-tracker-gateway
-docker run -d -p 4000:4000 crypto-tracker-gateway
+docker build . -t ct-trading-gateway
+docker run -d -p 3000:3000 -p 3080:3080 ct-trading-gateway

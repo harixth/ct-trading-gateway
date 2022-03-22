@@ -15,6 +15,7 @@ WORKDIR /home/node
 COPY --from=builder /home/node/node_modules /home/node/node_modules
 COPY --from=builder /home/node/dist/ /home/node/dist/
 
-EXPOSE 4000
+EXPOSE 3000
+EXPOSE 3080
 
 CMD ["node", "dist/main.js"]
