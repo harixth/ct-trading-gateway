@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ct-trading-gateway-deployment
+  labels:
+        app: ct-trading-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ct-trading-gateway
+  template:
+    metadata:
+      labels:
+        app: ct-trading-gateway
+    spec:
+      containers:
+      - name: ct-trading-gateway
+        image: asia.gcr.io/wealthbee/ct-trading-gateway:latest
+        ports:
+          - containerPort: 3000
+          - containerPort: 3080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ct-trading-gateway-service
+spec:
+  selector:
+    app: ct-trading-gateway
+  ports:
+  - name: ct-trading-gateway-rest
+    port: 3000
+    targetPort: 3000
+    protocol: TCP
+  - name: ct-trading-gateway-websocket
+    port: 3080
+    targetPort: 3080
+    protocol: TCP
+  type: ClusterIP
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: ct-trading-gateway-load-balancer-service
+spec:
+  ports:
+  - name: ct-trading-gateway-rest
+    port: 3000
+    protocol: TCP
+    targetPort: 3000
+  - name: ct-trading-gateway-websocket
+    port: 3080
+    protocol: TCP
+    targetPort: 3080
+  selector:
+    app: application-web-pod
+  type: LoadBalancer
+status:
+  loadBalancer: {}
