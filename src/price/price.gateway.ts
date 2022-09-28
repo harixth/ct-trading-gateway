@@ -18,7 +18,7 @@ import { PriceService } from './price.service';
 
 @WebSocketGateway(3080, {
   cors: {
-    origin: ['http://localhost:3001'],
+    origin: ['http://localhost:3000'],
     credentials: true,
   },
 })
@@ -36,7 +36,7 @@ export class PriceGateway {
     CRYPTO_SYMBOLS.forEach((symbol: string) => {
       this.kafka.subscribeToResponseOf(`crypto.prices.${symbol}`);
     });
-    await this.kafka.connect();
+    //await this.kafka.connect();
   }
 
   onModuleDestroy() {

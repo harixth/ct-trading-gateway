@@ -9,7 +9,7 @@ async function bootstrap() {
     transport: Transport.KAFKA,
     options: {
       client: {
-        brokers: ['kafka:9093'],
+        brokers: ['kafka:19092'],
       },
       consumer: {
         groupId: 'pricing-consumer',
@@ -18,11 +18,11 @@ async function bootstrap() {
   });
   await app.startAllMicroservices();
   app.enableCors({
-    origin: ['http://localhost:3001'],
+    origin: ['http://localhost:3000'],
     credentials: true,
   });
   app.useWebSocketAdapter(new IoAdapter(app));
-  const PORT = process.env.PORT || 3000;
+  const PORT = process.env.PORT || 4100;
   await app.listen(PORT, '0.0.0.0', () => {
     console.log(`Trading Gateway is running on port ${PORT}`);
   });
